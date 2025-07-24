@@ -1,0 +1,69 @@
+[gd_scene load_steps=8 format=3 uid="uid://bs2pro5ofr50x"]
+
+[ext_resource type="Shader" uid="uid://bwi0lqhmuq632" path="res://Assets/Shaders/posterize.gdshader" id="2_wso2r"]
+[ext_resource type="Material" uid="uid://waoa3kh7cqif" path="res://Assets/Materials/outline.tres" id="3_daxww"]
+[ext_resource type="Shader" uid="uid://ckbwj7ikk65w0" path="res://Assets/Shaders/shader_test_material.gdshader" id="3_mrmnq"]
+[ext_resource type="Texture2D" uid="uid://bo6upxu0pklol" path="res://Assets/Shaders/bayer8tile4.png" id="3_w2ob4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_56mpk"]
+resource_local_to_scene = true
+shader = ExtResource("3_mrmnq")
+shader_parameter/dither_matrix = ExtResource("3_w2ob4")
+shader_parameter/primary_color = Color(1, 1, 1, 1)
+shader_parameter/secondary_color = Color(0, 0, 0, 1)
+shader_parameter/levels = 3
+shader_parameter/max_color_range = 0.25
+shader_parameter/dither_scale = 1
+shader_parameter/dithering_intensity = 0.2
+shader_parameter/brightness = 1.0
+shader_parameter/contrast = 1.0
+
+[sub_resource type="PrismMesh" id="PrismMesh_mrmnq"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w2ob4"]
+render_priority = 0
+next_pass = ExtResource("3_daxww")
+shader = ExtResource("2_wso2r")
+shader_parameter/smoothstep_min = 0.01
+shader_parameter/smoothstep_max = 0.03
+shader_parameter/main_color = Color(0.564962, 0.564962, 0.564962, 1)
+shader_parameter/specular = false
+shader_parameter/specular_light = 1000.0
+shader_parameter/specular_falloff = 0.25
+shader_parameter/edge_falloff = 4.0
+
+[node name="ShaderTest" type="Node3D"]
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+texture_filter = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(1152, 648)
+size_2d_override_stretch = true
+render_target_update_mode = 4
+
+[node name="Camera3D" type="Camera3D" parent="SubViewportContainer/SubViewport"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 2, 2)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewportContainer/SubViewport"]
+transform = Transform3D(0.258819, -0.682953, 0.683073, 0, 0.707169, 0.707045, -0.965926, -0.182997, 0.183029, 0, 0, 0)
+
+[node name="ColorRect" type="ColorRect" parent="SubViewportContainer/SubViewport"]
+visible = false
+material = SubResource("ShaderMaterial_56mpk")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewportContainer/SubViewport"]
+mesh = SubResource("PrismMesh_mrmnq")
+surface_material_override/0 = SubResource("ShaderMaterial_w2ob4")
